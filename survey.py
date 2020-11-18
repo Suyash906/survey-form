@@ -90,7 +90,7 @@ class Survery:
         self.__questions_list = questions_list
         self.__result = 'Fail'
 
-    def add_question(self, id, question):
+    def add_question(self, question):
         self.__questions_list.append(question)
 
     def get_survey_questions(self):
@@ -103,15 +103,15 @@ class Survery:
         for response in user_response:
             question_id = response.get_question_id()
             questtion_response = response.get_response()
-
             for question in self.__questions_list:
                 if question.get_id() == question_id:
                     if isinstance(question, BooleanQuestion) and question.get_correct_response() != questtion_response:
                         self.__result = 'Fail'
                         return
-                    elif isinstance(question, RangeQuestion) and (question.get_min() > questtion_response or question.get_max() < questtion_response):
-                        self.__result = 'Fail'
-                        return
+                    elif isinstance(question, RangeQuestion):
+                        if question.get_min() > questtion_response or question.get_max() < questtion_response:
+                            self.__result = 'Fail'
+                            return
 
         self.__result = 'Pass'
 
@@ -124,6 +124,9 @@ def main():
     # survey.add_question(1, "Have you ever been diagnosed with diabetes?”", "Yes")
     # survey.add_question(2, "Are you between the ages of 18 and 75?”", "No")
 
+    for question in question_list:
+        survey.add_question(question)
+
     question_list = survey.get_survey_questions()
 
     for question in question_list:
@@ -131,7 +134,7 @@ def main():
 
     user_response = []
     user_response.append(UserResponse(1, "Yes"))
-    user_response.append(UserResponse(2, 80))
+    user_response.append(UserResponse(2, 25))
     survey.verify_response(user_response)
 
     result = survey.get_result()
